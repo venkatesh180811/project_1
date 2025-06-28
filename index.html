@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brain Out Game</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="game-container">
+    <!-- Authentication Section -->
+    <section id="authentication">
+      <h3>Login to Play</h3>
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button onclick="authenticate()">Login</button>
+      <p id="auth-message" class="hidden"></p>
+    </section>
+
+    <!-- Game Mode Selection -->
+    <section id="mode-selection" class="hidden">
+      <h3>Select Game Mode:</h3>
+      <button onclick="selectMode('single')">Single Player</button>
+      <button onclick="selectMode('multiplayer')">Multiplayer</button>
+    </section>
+
+    <!-- Player Name Inputs (Multiplayer Mode) -->
+    <section id="player-inputs" class="hidden">
+      <h3>Enter Player Names:</h3>
+      <input type="text" id="player1-name" placeholder="Player 1 Name" />
+      <input type="text" id="player2-name" placeholder="Player 2 Name" />
+      <button onclick="confirmPlayers()">Confirm</button>
+    </section>
+
+    <!-- Difficulty Selection -->
+    <section id="difficulty-selection" class="hidden">
+      <h3>Choose Difficulty:</h3>
+      <button onclick="startGame('easy')">Easy</button>
+      <button onclick="startGame('medium')">Medium</button>
+      <button onclick="startGame('hard')">Hard</button>
+    </section>
+
+    <!-- Game Section -->
+    <section id="game" class="hidden">
+      <h2 id="turn-info"></h2>
+      <div id="question-container">
+        <h2 id="question"></h2>
+        <div id="answers"></div>
+        <div id="hint-container"></div>
+        <p id="hint" class="hidden"></p>
+        <div id="result"></div>
+      </div>
+      <div id="scoreboard"></div>
+    </section>
+
+    <!-- Game Result Section -->
+    <section id="game-result" class="hidden">
+      <h3>Game Over!</h3>
+      <p id="winner-message"></p>
+      <p id="final-scoreboard"></p>
+      <button onclick="restartGame()">Play Again</button>
+      <button id="exit-button" onclick="exitGame()">Exit</button>
+    </section>
+
+    <!-- Admin Panel as Advanced Dashboard -->
+    <section id="admin-panel" class="hidden">
+      <h2>Admin Dashboard</h2>
+      <div class="admin-tabs">
+        <button onclick="showAdminTab('users')">Users</button>
+        <button onclick="showAdminTab('scores')">Scores</button>
+        <button onclick="showAdminTab('questions')">Questions</button>
+        <button onclick="showAdminTab('import-export')">Import/Export</button>
+        <button onclick="showAdminTab('settings')">Settings</button>
+        <button onclick="adminLogout()">Logout</button>
+      </div>
+
+      <div id="admin-content">
+        <div id="tab-users" class="admin-tab hidden">
+          <h3>User Management</h3>
+          <ul id="user-list"></ul>
+          <input id="ban-user-name" placeholder="Username" />
+          <button onclick="banUser()">Ban</button>
+          <button onclick="unbanUser()">Unban</button>
+        </div>
+
+        <div id="tab-scores" class="admin-tab hidden">
+          <h3>Scores</h3>
+          <pre id="admin-score-display">No scores yet.</pre>
+          <button onclick="resetScores()">Reset Scores</button>
+        </div>
+
+        <div id="tab-questions" class="admin-tab hidden">
+          <h3>Add New Question</h3>
+          <input id="new-q" placeholder="Question" />
+          <input id="opt1" placeholder="Option 1" />
+          <input id="opt2" placeholder="Option 2" />
+          <input id="opt3" placeholder="Option 3" />
+          <input id="opt4" placeholder="Option 4" />
+          <input id="correct" placeholder="Correct Answer" />
+          <input id="hint-text" placeholder="Hint" />
+          <button onclick="addCustomQuestion()">Add Question</button>
+
+          <h3>Edit/Delete Question</h3>
+          <input id="edit-index" placeholder="Index" type="number" />
+          <input id="edit-text" placeholder="New Question Text" />
+          <button onclick="editQuestion()">Edit</button>
+          <input id="delete-question-index" placeholder="Index to Delete" type="number" />
+          <button onclick="deleteQuestion()">Delete</button>
+
+          <button onclick="viewAllQuestions()">View All Questions (Console)</button>
+        </div>
+
+        <div id="tab-import-export" class="admin-tab hidden">
+          <h3>Import/Export Questions</h3>
+          <input type="file" id="import-file" onchange="importQuestions(event)" />
+          <button onclick="exportQuestions()">Export Questions</button>
+        </div>
+
+        <div id="tab-settings" class="admin-tab hidden">
+          <h3>Settings</h3>
+          <button onclick="toggleHints()">Toggle Hints</button>
+          <button onclick="resetGameSession()">Reset Game Session</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function authenticate() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (username === "admin" && password === "admin123") {
+        document.getElementById("authentication").classList.add("hidden");
+        document.getElementById("admin-panel").classList.remove("hidden");
+        showAdminTab('users');
+      } else if (username && password) {
+        if (bannedUsers && bannedUsers.includes(username)) {
+          document.getElementById("auth-message").innerText = "User is banned.";
+          document.getElementById("auth-message").classList.remove("hidden");
+          return;
+        }
+        document.getElementById("authentication").classList.add("hidden");
+        document.getElementById("mode-selection").classList.remove("hidden");
+      } else {
+        document.getElementById("auth-message").innerText = "Invalid credentials.";
+        document.getElementById("auth-message").classList.remove("hidden");
+      }
+    }
+
+    function showAdminTab(tabId) {
+      const tabs = document.querySelectorAll(".admin-tab");
+      tabs.forEach(tab => tab.classList.add("hidden"));
+      const selectedTab = document.getElementById(`tab-${tabId}`);
+      if (selectedTab) selectedTab.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
